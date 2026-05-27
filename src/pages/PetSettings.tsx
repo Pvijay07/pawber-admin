@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Settings, Dog, Cat, IterationCw as Cow, Search, Check } from 'lucide-react';
-import { adminService } from '../services/admin.service';
+import { Plus, Trash2, Dog, Cat, IterationCw as Cow } from 'lucide-react';
 
 const INITIAL_TYPES = [
     { id: 'Dog', name: 'Dog', icon: Dog },

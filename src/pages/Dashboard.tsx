@@ -22,14 +22,6 @@ const revenueData = [
     { month: 'Jul', revenue: 85000, bookings: 310 },
 ];
 
-const serviceData = [
-    { name: 'Grooming', value: 42, color: '#FF7A3D' },
-    { name: 'Vet', value: 25, color: '#3b82f6' },
-    { name: 'Walking', value: 18, color: '#f59e0b' },
-    { name: 'Training', value: 10, color: '#8b5cf6' },
-    { name: 'Boarding', value: 5, color: '#ef4444' },
-];
-
 const weeklyBookings = [
     { day: 'Mon', count: 45 },
     { day: 'Tue', count: 52 },

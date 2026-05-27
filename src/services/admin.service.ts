@@ -7,6 +7,7 @@ export interface DashboardStats {
     total_providers: number;
     total_bookings: number;
     total_revenue: number;
+    service_distribution?: any[];
 }
 
 export interface DashboardResponse {

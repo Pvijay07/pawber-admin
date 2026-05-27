@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
-    Image as ImageIcon, Plus, Trash2, Save, ExternalLink, 
-    MoveUp, MoveDown, AlertCircle, Info, Sparkles 
+    Image as ImageIcon, Plus, Trash2, Save, 
+    MoveUp, MoveDown, AlertCircle, Info 
 } from 'lucide-react';
 import { adminService } from '../services/admin.service';
 
@@ -22,7 +22,6 @@ export default function Banners() {
     const fetchBanners = async () => {
         try {
             setLoading(true);
-            const response = await adminService.getDashboard(); // We can use dashboard for now or add a specific one
             // Actually let's use the content route
             const contentRes = await fetch(`${import.meta.env.VITE_API_URL}/content/homepage`);
             const data = await contentRes.json();
