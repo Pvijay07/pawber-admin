@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import {
     LayoutDashboard, CalendarCheck, Users, Briefcase, Wallet,
     AlertTriangle, PartyPopper, Webhook, Sun, Moon, Menu, PawPrint,
-    ChevronLeft, LogOut, Layers, Settings, Image
+    ChevronLeft, LogOut, Layers, Settings, Image, Bell, MessageCircle
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -35,8 +35,10 @@ const navItems: { section: string; items: { id: Page; icon: any; label: string; 
     {
         section: 'Operations',
         items: [
+            { id: 'whatsapp', icon: MessageCircle, label: 'WhatsApp Inbox' },
             { id: 'banners', icon: Image, label: 'App Banners' },
             { id: 'events', icon: PartyPopper, label: 'Events' },
+            { id: 'notifications', icon: Bell, label: 'Notification Center' },
             { id: 'webhooks', icon: Webhook, label: 'Webhook Logs' },
         ],
     },

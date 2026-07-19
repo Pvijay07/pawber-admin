@@ -130,4 +130,11 @@ export const adminService = {
 
     updateContent: (key: string, content: any) =>
         api.patch(`/content/${key}`, { content }),
+
+    // Notifications Simulator
+    getNotificationTemplates: () =>
+        api.get<{ success: boolean; templates: any[] }>('/admin/notifications/templates'),
+
+    triggerSimulationNotification: (data: { userId?: string; templateId: string; context?: Record<string, any> }) =>
+        api.post<{ success: boolean; message: string }>('/admin/notifications/trigger-simulation', data),
 };

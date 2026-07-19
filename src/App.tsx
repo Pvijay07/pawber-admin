@@ -12,10 +12,12 @@ import Services from './pages/Services';
 import PetSettings from './pages/PetSettings';
 import Banners from './pages/Banners';
 import Login from './pages/Login';
+import NotificationsSimulator from './pages/NotificationsSimulator';
+import WhatsAppInbox from './pages/WhatsAppInbox';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
-export type Page = 'dashboard' | 'bookings' | 'users' | 'providers' | 'payments' | 'disputes' | 'events' | 'webhooks' | 'services' | 'pet-settings' | 'banners';
+export type Page = 'dashboard' | 'bookings' | 'users' | 'providers' | 'payments' | 'disputes' | 'events' | 'webhooks' | 'services' | 'pet-settings' | 'banners' | 'notifications' | 'whatsapp';
 
 interface ThemeContextType {
   isDark: boolean;
@@ -61,6 +63,8 @@ function AppContent() {
       case 'services': return <Services />;
       case 'pet-settings': return <PetSettings />;
       case 'banners': return <Banners />;
+      case 'notifications': return <NotificationsSimulator />;
+      case 'whatsapp': return <WhatsAppInbox />;
       default: return <Dashboard />;
     }
   };
