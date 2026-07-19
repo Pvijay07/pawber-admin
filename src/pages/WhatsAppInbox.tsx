@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   MessageCircle, Search, Send, Paperclip, Mic, Sparkles,
   Zap, StickyNote, X, Check, CheckCheck, Clock, AlertCircle,
-  FileText, ChevronDown, RotateCcw, User, PawPrint, Calendar,
-  Phone, Mail, Tag, UserCheck, MessageSquare
+  FileText, RotateCcw, User, PawPrint, Calendar,
+  Phone, Tag, UserCheck, MessageSquare
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import './WhatsAppInbox.css';
