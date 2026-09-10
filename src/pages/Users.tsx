@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users as UsersIcon, Eye, Ban, PawPrint, Mail, Phone } from 'lucide-react';
+import { Users as UsersIcon, Eye, Ban, PawPrint, Mail, Phone, Trash2 } from 'lucide-react';
 import { adminService } from '../services/admin.service';
 
 export default function Users() {
@@ -8,6 +8,7 @@ export default function Users() {
     const [users, setUsers] = useState<any[]>([]);
     const [pets, setPets] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
     const [stats, setStats] = useState({ totalUsers: 0, totalPets: 0, suspended: 0 });
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
 
@@ -40,6 +41,47 @@ export default function Users() {
         fetchData();
     }, []);
 
+
+    const isAdminUser = (user: any) => {
+        return user.role === 'admin' || user.email === 'admin@petsfolio.com' || user.email === 'admin@pawber.com';
+    };
+
+    const handleDeleteUser = async (u: any) => {
+        if (isAdminUser(u)) {
+            alert('Administrator accounts cannot be deleted.');
+            return;
+        }
+
+        const confirmMsg = `Are you sure you want to permanently delete user "${u.full_name || u.email}"? All associated pets, bookings, wallets, and profile records will be permanently removed.`;
+        if (!window.confirm(confirmMsg)) return;
+
+        setDeletingId(u.id);
+        try {
+            await adminService.deleteUser(u.id);
+            setUsers(prev => prev.filter(user => user.id !== u.id));
+            setStats(prev => ({ ...prev, totalUsers: Math.max(0, prev.totalUsers - 1) }));
+            if (selectedUser?.id === u.id) setSelectedUser(null);
+        } catch (err: any) {
+            alert(err.response?.data?.message || err.message || 'Failed to delete user');
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    const handleDeletePet = async (pet: any) => {
+        if (!window.confirm(`Are you sure you want to delete pet "${pet.name}"?`)) return;
+
+        setDeletingId(pet.id);
+        try {
+            await adminService.deletePet(pet.id);
+            setPets(prev => prev.filter(p => p.id !== pet.id));
+            setStats(prev => ({ ...prev, totalPets: Math.max(0, prev.totalPets - 1) }));
+        } catch (err: any) {
+            alert(err.response?.data?.message || err.message || 'Failed to delete pet');
+        } finally {
+            setDeletingId(null);
+        }
+    };
 
     const filteredUsers = users.filter(u =>
         (u.full_name || '').toLowerCase().includes(search.toLowerCase()) ||
@@ -119,8 +161,19 @@ export default function Users() {
                                     <td><span className={`badge-status ${u.onboarded ? 'active' : 'pending'}`}>{u.onboarded ? 'Active' : 'Pending'}</span></td>
                                     <td>
                                         <div style={{ display: 'flex', gap: 4 }}>
-                                            <button className="btn btn-ghost btn-sm btn-icon" onClick={() => setSelectedUser(u)}><Eye size={14} /></button>
-                                            <button className="btn btn-danger btn-sm btn-icon"><Ban size={14} /></button>
+                                            <button className="btn btn-ghost btn-sm btn-icon" onClick={() => setSelectedUser(u)} title="View User"><Eye size={14} /></button>
+                                            <button className="btn btn-danger btn-sm btn-icon" title="Suspend User"><Ban size={14} /></button>
+                                            {!isAdminUser(u) && (
+                                                <button 
+                                                    className="btn btn-ghost btn-sm btn-icon" 
+                                                    style={{ color: 'var(--danger)' }} 
+                                                    title="Delete User"
+                                                    disabled={deletingId === u.id}
+                                                    onClick={() => handleDeleteUser(u)}
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -136,11 +189,11 @@ export default function Users() {
                     </div>
                     <table>
                         <thead>
-                            <tr><th>Pet</th><th>Type</th><th>Breed</th><th>Age</th><th>Owner ID</th><th>Created</th></tr>
+                            <tr><th>Pet</th><th>Type</th><th>Breed</th><th>Age</th><th>Owner</th><th>Created</th><th>Actions</th></tr>
                         </thead>
                         <tbody>
                             {filteredPets.map((p, i) => (
-                                <tr key={i}>
+                                <tr key={p.id || i}>
                                     <td>
                                         <div className="table-user">
                                             {p.image_url ?
@@ -155,6 +208,17 @@ export default function Users() {
                                     <td>{p.age} yrs</td>
                                     <td><span style={{ fontSize: 13, fontWeight: 600 }}>{p.owner?.full_name || 'Unknown'}</span></td>
                                     <td><span style={{ fontSize: 12 }}>{new Date(p.created_at).toLocaleDateString()}</span></td>
+                                    <td>
+                                        <button 
+                                            className="btn btn-ghost btn-sm btn-icon" 
+                                            style={{ color: 'var(--danger)' }} 
+                                            title="Delete Pet"
+                                            disabled={deletingId === p.id}
+                                            onClick={() => handleDeletePet(p)}
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -202,9 +266,22 @@ export default function Users() {
                                 </div>
                             </div>
                         </div>
-                        <div className="modal-footer">
-                            <button className="btn btn-danger btn-sm"><Ban size={14} /> Suspend User</button>
-                            <button className="btn btn-secondary btn-sm" onClick={() => setSelectedUser(null)}>Close</button>
+                        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                                {!isAdminUser(selectedUser) && (
+                                    <button 
+                                        className="btn btn-danger btn-sm" 
+                                        style={{ background: 'var(--danger)', color: '#fff' }}
+                                        onClick={() => handleDeleteUser(selectedUser)}
+                                        disabled={deletingId === selectedUser.id}
+                                    >
+                                        <Trash2 size={14} /> Delete User
+                                    </button>
+                                )}
+                            </div>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <button className="btn btn-secondary btn-sm" onClick={() => setSelectedUser(null)}>Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>

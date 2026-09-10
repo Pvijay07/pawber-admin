@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const checkAdmin = async (userId: string, email?: string) => {
-        if (email === 'admin@petsfolio.com') {
+        if (email === 'admin@petsfolio.com' || email === 'admin@pawber.com') {
             setIsAdmin(true);
             setLoading(false);
             return;

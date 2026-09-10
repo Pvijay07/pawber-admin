@@ -32,8 +32,11 @@ export const adminService = {
         api.get('/admin/pets', { params }),
 
     // Providers
-    listProviders: (params?: { status?: string; limit?: number; offset?: number }) =>
+    listProviders: (params?: { status?: string; kyc_status?: string; limit?: number; offset?: number }) =>
         api.get('/admin/providers', { params }),
+
+    getProviderById: (id: string) =>
+        api.get(`/admin/providers/${id}`),
 
     updateProviderStatus: (id: string, status: 'approved' | 'rejected' | 'suspended') =>
         api.patch(`/admin/providers/${id}/status`, { status }),
@@ -42,16 +45,47 @@ export const adminService = {
         api.patch(`/admin/providers/${id}/commission`, { commission_rate }),
 
     // KYC & Verification
-    updateProviderKYC: (id: string, kyc_status: 'verified' | 'rejected' | 'pending') =>
-        api.patch(`/admin/providers/${id}/kyc`, { kyc_status }),
+    updateProviderKYC: (id: string, kyc_status: 'approved' | 'verified' | 'rejected' | 'pending', rejection_reason?: string) =>
+        api.patch(`/admin/providers/${id}/kyc`, { kyc_status, rejection_reason }),
 
     // Documents
-    verifyDocument: (id: string, verification_status: 'approved' | 'rejected') =>
-        api.patch(`/admin/documents/${id}/verify`, { verification_status }),
+    verifyDocument: (id: string, verification_status: 'approved' | 'rejected' | 'pending', notes?: string) =>
+        api.patch(`/admin/documents/${id}/verify`, { verification_status, notes }),
 
     // Bookings
     listBookings: (params?: { status?: string; limit?: number; offset?: number }) =>
         api.get('/admin/bookings', { params }),
+
+    deleteBooking: (id: string) =>
+        api.delete(`/admin/bookings/${id}`),
+
+    bulkDeleteBookings: (data: { status?: string; ids?: string[] }) =>
+        api.delete('/admin/bookings', { data }),
+
+    // Users
+    deleteUser: (id: string) =>
+        api.delete(`/admin/users/${id}`),
+
+    // Providers
+    deleteProvider: (id: string) =>
+        api.delete(`/admin/providers/${id}`),
+
+    // Pets
+    deletePet: (id: string) =>
+        api.delete(`/admin/pets/${id}`),
+
+    // Database & Data Management
+    getDatabaseOverview: () =>
+        api.get<{ success: boolean; tables: { tableName: string; count: number }[] }>('/admin/database/overview'),
+
+    getTableRecords: (tableName: string, params?: { limit?: number; offset?: number; search?: string }) =>
+        api.get<{ success: boolean; rows: any[]; totalCount: number }>(`/admin/database/table/${tableName}`, { params }),
+
+    deleteTableRow: (tableName: string, id: string) =>
+        api.delete(`/admin/database/table/${tableName}/${id}`),
+
+    purgeDatabase: (target: 'notifications' | 'webhook_logs' | 'cancelled_bookings' | 'all_test_bookings') =>
+        api.post<{ success: boolean; message: string }>('/admin/database/purge', { target }),
 
     // Disputes
     listDisputes: () =>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MoreVertical, Eye, Clock, Download, UserPlus, Search, X } from 'lucide-react';
+import { MoreVertical, Eye, Clock, Download, UserPlus, Search, X, Trash2 } from 'lucide-react';
 import { adminService } from '../services/admin.service';
 
 export default function Bookings() {
@@ -7,6 +7,7 @@ export default function Bookings() {
     const [search, setSearch] = useState('');
     const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
     
     // Direct Assign State
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -58,6 +59,21 @@ export default function Bookings() {
             alert('Failed to assign provider');
         } finally {
             setIsAssigning(false);
+        }
+    };
+
+    const handleDeleteBooking = async (booking: any) => {
+        const confirmMsg = `Are you sure you want to permanently delete booking #${booking.id.slice(0, 8)} (${booking.service?.name || 'Service'})? All associated payments, reviews, and event records will also be removed.`;
+        if (!window.confirm(confirmMsg)) return;
+
+        setDeletingId(booking.id);
+        try {
+            await adminService.deleteBooking(booking.id);
+            setBookings(prev => prev.filter(b => b.id !== booking.id));
+        } catch (err: any) {
+            alert(err.response?.data?.message || err.message || 'Failed to delete booking');
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -180,6 +196,15 @@ export default function Bookings() {
                                                 <UserPlus size={14} />
                                             </button>
                                         )}
+                                        <button 
+                                            className="btn btn-ghost btn-sm btn-icon" 
+                                            style={{ color: 'var(--danger)' }} 
+                                            title="Delete Booking"
+                                            disabled={deletingId === b.id}
+                                            onClick={() => handleDeleteBooking(b)}
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
                                         <button className="btn btn-ghost btn-sm btn-icon" title="More"><MoreVertical size={14} /></button>
                                     </div>
                                 </td>

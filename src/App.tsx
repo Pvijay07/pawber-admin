@@ -14,10 +14,11 @@ import Banners from './pages/Banners';
 import Login from './pages/Login';
 import NotificationsSimulator from './pages/NotificationsSimulator';
 import WhatsAppInbox from './pages/WhatsAppInbox';
+import Database from './pages/Database';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
-export type Page = 'dashboard' | 'bookings' | 'users' | 'providers' | 'payments' | 'disputes' | 'events' | 'webhooks' | 'services' | 'pet-settings' | 'banners' | 'notifications' | 'whatsapp';
+export type Page = 'dashboard' | 'bookings' | 'users' | 'providers' | 'payments' | 'disputes' | 'events' | 'webhooks' | 'services' | 'pet-settings' | 'banners' | 'notifications' | 'whatsapp' | 'database';
 
 interface ThemeContextType {
   isDark: boolean;
@@ -65,6 +66,7 @@ function AppContent() {
       case 'banners': return <Banners />;
       case 'notifications': return <NotificationsSimulator />;
       case 'whatsapp': return <WhatsAppInbox />;
+      case 'database': return <Database />;
       default: return <Dashboard />;
     }
   };
