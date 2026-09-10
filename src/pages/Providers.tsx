@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { 
     Briefcase, 
-    Star, 
     CheckCircle, 
     XCircle, 
     Ban, 
     Percent, 
-    TrendingUp, 
     Shield, 
     Eye, 
     FileText, 
@@ -14,7 +12,6 @@ import {
     AlertCircle, 
     Clock, 
     Search,
-    UserCheck,
     X,
     FileCheck,
     CreditCard,
@@ -68,7 +65,6 @@ export default function Providers() {
     };
 
     const approve = (id: string) => updateStatus(id, 'approved');
-    const reject = (id: string) => updateStatus(id, 'rejected');
     const suspend = (id: string) => updateStatus(id, 'suspended');
 
     // KYC Approval
