@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { adminService } from '../services/admin.service';
 import { 
     Bell, Search, Filter, Play, CheckCircle, AlertTriangle, 
-    Info, ShieldAlert, RefreshCw, X, HelpCircle
+    Info, ShieldAlert, RefreshCw, X, HelpCircle, Users, Briefcase
 } from 'lucide-react';
 
 interface NotificationTemplate {
@@ -176,62 +176,67 @@ export default function NotificationsSimulator() {
     };
 
     return (
-        <div className="container-fluid" style={{ padding: '24px 30px' }}>
+        <div className="animate-in">
             {/* Header */}
-            <div className="dashboard-header" style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="page-header">
                 <div>
-                    <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <Bell size={26} className="text-primary" /> Notification Center & Simulator
+                    <h1 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Bell size={26} color="var(--accent)" /> Notification Center & Simulator
                     </h1>
-                    <p style={{ margin: '4px 0 0 0', color: 'var(--text-muted)', fontSize: 13 }}>
+                    <p className="subtitle">
                         Manage, filter, and simulate multi-channel notifications for clients, providers, and system operations.
                     </p>
                 </div>
-                <button className="btn btn-secondary" onClick={loadInitialData} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <RefreshCw size={14} /> Refresh Data
-                </button>
+                <div className="page-header-actions">
+                    <button className="btn btn-secondary btn-sm" onClick={loadInitialData} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <RefreshCw size={14} /> Refresh Data
+                    </button>
+                </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20, marginBottom: 24 }}>
-                <div className="stats-card">
-                    <div className="label">Total Notifications Catalog</div>
-                    <div className="value">{templates.length}</div>
-                    <div className="desc">Preconfigured System Alerts</div>
+            <div className="stats-grid" style={{ marginBottom: 28 }}>
+                <div className="stat-card accent">
+                    <div className="stat-icon accent"><Bell size={20} /></div>
+                    <div className="stat-label">Total Notifications Catalog</div>
+                    <div className="stat-value">{templates.length}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, fontWeight: 500 }}>Preconfigured System Alerts</div>
                 </div>
-                <div className="stats-card">
-                    <div className="label">Critical Priority</div>
-                    <div className="value text-danger">{templates.filter(t => t.priority === 'critical').length}</div>
-                    <div className="desc">Multi-channel broadcast</div>
+                <div className="stat-card danger">
+                    <div className="stat-icon danger"><ShieldAlert size={20} /></div>
+                    <div className="stat-label">Critical Priority</div>
+                    <div className="stat-value" style={{ color: 'var(--danger)' }}>{templates.filter(t => t.priority === 'critical').length}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, fontWeight: 500 }}>Multi-channel broadcast</div>
                 </div>
-                <div className="stats-card">
-                    <div className="label">Client Subscriptions</div>
-                    <div className="value text-warning">{users.length}</div>
-                    <div className="desc">Active simulation clients</div>
+                <div className="stat-card warning">
+                    <div className="stat-icon warning"><Users size={20} /></div>
+                    <div className="stat-label">Client Subscriptions</div>
+                    <div className="stat-value" style={{ color: 'var(--warning)' }}>{users.length}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, fontWeight: 500 }}>Active simulation clients</div>
                 </div>
-                <div className="stats-card">
-                    <div className="label">Registered Providers</div>
-                    <div className="value text-success">{providers.length}</div>
-                    <div className="desc">Active simulation experts</div>
+                <div className="stat-card info">
+                    <div className="stat-icon info"><Briefcase size={20} /></div>
+                    <div className="stat-label">Registered Providers</div>
+                    <div className="stat-value" style={{ color: 'var(--info)' }}>{providers.length}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, fontWeight: 500 }}>Active simulation experts</div>
                 </div>
             </div>
 
             {/* Filter and Simulator Actions */}
-            <div className="row" style={{ display: 'flex', gap: 24 }}>
+            <div className="row" style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
                 {/* Left Column - Templates Catalog */}
-                <div style={{ flex: '2', minWidth: '0' }}>
-                    <div className="panel" style={{ padding: 20 }}>
+                <div style={{ flex: '2', minWidth: '340px' }}>
+                    <div className="card" style={{ padding: 24 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-                            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>System Notifications Catalog</h3>
+                            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>System Notifications Catalog</h3>
                             
                             {/* Search */}
-                            <div className="search-box" style={{ position: 'relative', width: 250 }}>
-                                <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                            <div className="search-box" style={{ width: 250 }}>
                                 <input 
                                     type="text" 
                                     placeholder="Search notifications..." 
-                                    className="form-control" 
-                                    style={{ paddingLeft: 30, fontSize: 13 }}
+                                    className="input search-input" 
+                                    style={{ width: '100%' }}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
@@ -239,18 +244,18 @@ export default function NotificationsSimulator() {
                         </div>
 
                         {/* Filters Bar */}
-                        <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <Filter size={13} className="text-muted" />
-                                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Role:</span>
+                                <Filter size={13} color="var(--text-muted)" />
+                                <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>Role:</span>
                             </div>
-                            <div style={{ display: 'flex', gap: 6 }}>
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                                 {['all', 'client', 'provider', 'admin', 'chat', 'marketing'].map(cat => (
                                     <button 
                                         key={cat} 
                                         onClick={() => setSelectedCategory(cat)}
-                                        className={`btn btn-sm ${selectedCategory === cat ? 'btn-primary' : 'btn-light'}`}
-                                        style={{ textTransform: 'capitalize', fontSize: 11 }}
+                                        className={`btn btn-sm ${selectedCategory === cat ? 'btn-primary' : 'btn-secondary'}`}
+                                        style={{ textTransform: 'capitalize', fontSize: 11, borderRadius: 20, padding: '4px 12px' }}
                                     >
                                         {cat}
                                     </button>
@@ -258,12 +263,12 @@ export default function NotificationsSimulator() {
                             </div>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
-                                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Priority:</span>
+                                <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>Priority:</span>
                                 <select 
-                                    className="form-control form-control-sm"
+                                    className="select"
                                     value={selectedPriority}
                                     onChange={(e) => setSelectedPriority(e.target.value)}
-                                    style={{ width: 110, fontSize: 11, padding: '2px 8px' }}
+                                    style={{ width: 130, fontSize: 12, padding: '4px 8px' }}
                                 >
                                     <option value="all">All Priorities</option>
                                     <option value="critical">🔴 Critical</option>
@@ -281,45 +286,46 @@ export default function NotificationsSimulator() {
                                 <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading templates registry...</p>
                             </div>
                         ) : filteredTemplates.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '60px 0', border: '1px dashed var(--border)', borderRadius: 8 }}>
+                            <div style={{ textAlign: 'center', padding: '60px 0', border: '1px dashed var(--border)', borderRadius: 'var(--radius-md)' }}>
                                 <Bell size={40} style={{ color: 'var(--text-muted)', marginBottom: 12 }} />
-                                <h4 style={{ margin: 0, fontSize: 15, fontWeight: 500 }}>No templates match filters</h4>
+                                <h4 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>No templates match filters</h4>
                                 <p style={{ margin: '4px 0 0 0', fontSize: 12, color: 'var(--text-muted)' }}>Try adjusting your search query or filter tags.</p>
                             </div>
                         ) : (
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
                                 {filteredTemplates.map(t => (
                                     <div 
                                         key={t.id} 
-                                        className="panel hover-effect" 
+                                        className="card hover-effect" 
                                         style={{ 
-                                            padding: 16, 
-                                            borderRadius: 8, 
+                                            padding: 18, 
+                                            borderRadius: 'var(--radius-md)', 
                                             border: '1px solid var(--border)', 
                                             display: 'flex', 
                                             flexDirection: 'column', 
                                             justifyContent: 'space-between',
                                             cursor: 'pointer',
-                                            background: 'var(--surface-overlay)'
+                                            background: 'var(--bg-card)',
+                                            transition: 'all 0.2s'
                                         }}
                                         onClick={() => setSelectedTemplate(t)}
                                     >
                                         <div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                                                <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', padding: '2px 6px', background: 'var(--primary-light)', color: 'var(--primary)', borderRadius: 4 }}>
+                                                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', padding: '3px 8px', background: 'var(--accent-light)', color: 'var(--accent)', borderRadius: 6, letterSpacing: 0.5 }}>
                                                     {t.category} • {t.subcategory}
                                                 </span>
                                                 {getPriorityBadge(t.priority)}
                                             </div>
-                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 14, fontWeight: 600 }}>{t.title}</h4>
-                                            <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: 36 }}>
+                                            <h4 style={{ margin: '0 0 6px 0', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{t.title}</h4>
+                                            <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: 36, lineHeight: 1.5 }}>
                                                 {t.bodyTemplate}
                                             </p>
                                         </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border-light)' }}>
-                                            <div style={{ display: 'flex', gap: 4 }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                                            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                                                 {t.defaultChannels.map(ch => (
-                                                    <span key={ch} style={{ fontSize: 10, padding: '1px 5px', border: '1px solid var(--border)', borderRadius: 4, textTransform: 'capitalize' }}>
+                                                    <span key={ch} style={{ fontSize: 10, padding: '2px 6px', background: 'var(--bg-tertiary)', color: 'var(--text-muted)', borderRadius: 4, textTransform: 'capitalize', fontWeight: 600 }}>
                                                         {ch}
                                                     </span>
                                                 ))}
@@ -336,33 +342,33 @@ export default function NotificationsSimulator() {
                 </div>
 
                 {/* Right Column - Session Simulator Logs */}
-                <div style={{ flex: '1', minWidth: '320px' }}>
-                    <div className="panel" style={{ padding: 20 }}>
-                        <h3 style={{ margin: '0 0 16px 0', fontSize: 16, fontWeight: 600 }}>Recent Activity Log</h3>
+                <div style={{ flex: '1', minWidth: '300px' }}>
+                    <div className="card" style={{ padding: 24 }}>
+                        <h3 style={{ margin: '0 0 8px 0', fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Recent Activity Log</h3>
                         <p style={{ margin: '0 0 16px 0', fontSize: 12, color: 'var(--text-muted)' }}>
                             View the output of simulated notifications in this session.
                         </p>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 600, overflowY: 'auto' }}>
                             {simulatedLogs.length === 0 ? (
-                                <div style={{ textAlign: 'center', padding: '40px 0', border: '1px dashed var(--border)', borderRadius: 8 }}>
+                                <div style={{ textAlign: 'center', padding: '40px 0', border: '1px dashed var(--border)', borderRadius: 'var(--radius-md)' }}>
                                     <HelpCircle size={30} style={{ color: 'var(--text-muted)', marginBottom: 8 }} />
                                     <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted)' }}>No simulations run in this session.</p>
                                 </div>
                             ) : (
                                 simulatedLogs.map(log => (
-                                    <div key={log.id} style={{ padding: 12, borderRadius: 6, border: '1px solid var(--border)', background: 'var(--background)' }}>
+                                    <div key={log.id} style={{ padding: 12, borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', background: 'var(--bg-primary)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                                             <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{log.timestamp}</span>
-                                            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--success)' }}>{log.status}</span>
+                                            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--info)' }}>{log.status}</span>
                                         </div>
-                                        <h5 style={{ margin: '0 0 4px 0', fontSize: 12, fontWeight: 600 }}>{log.title}</h5>
+                                        <h5 style={{ margin: '0 0 4px 0', fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{log.title}</h5>
                                         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>
-                                            Target: <span style={{ fontFamily: 'monospace' }}>{log.targetUserId.substring(0, 8)}...</span>
+                                            Target: <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{log.targetUserId.substring(0, 8)}...</span>
                                         </div>
                                         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                                             {log.channels.map((ch: string) => (
-                                                <span key={ch} style={{ fontSize: 9, padding: '1px 4px', background: 'var(--border-light)', borderRadius: 3 }}>
+                                                <span key={ch} style={{ fontSize: 9, padding: '2px 5px', background: 'var(--bg-tertiary)', color: 'var(--text-muted)', borderRadius: 4, fontWeight: 600 }}>
                                                     {ch}
                                                 </span>
                                             ))}
@@ -377,36 +383,36 @@ export default function NotificationsSimulator() {
 
             {/* Simulation Drawer Modal */}
             {selectedTemplate && (
-                <div style={{ position: 'fixed', right: 0, top: 0, width: 450, height: '100%', background: 'var(--surface)', borderLeft: '1px solid var(--border)', boxShadow: '-4px 0 20px rgba(0,0,0,0.15)', zIndex: 1000, padding: 24, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+                <div style={{ position: 'fixed', right: 0, top: 0, width: 450, maxWidth: '90vw', height: '100%', background: 'var(--bg-card)', borderLeft: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)', zIndex: 1000, padding: 24, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>Simulate Notification</h3>
-                        <button className="btn btn-light" onClick={() => setSelectedTemplate(null)} style={{ padding: 4, borderRadius: 50 }}>
-                            <X size={18} />
+                        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: 'var(--text-primary)' }}>Simulate Notification</h3>
+                        <button className="btn btn-secondary btn-icon" onClick={() => setSelectedTemplate(null)} style={{ width: 32, height: 32, borderRadius: '50%' }}>
+                            <X size={16} />
                         </button>
                     </div>
 
                     <div style={{ flex: 1, overflowY: 'auto', marginBottom: 20 }}>
-                        <div style={{ padding: 12, background: 'var(--background)', borderRadius: 6, border: '1px solid var(--border)', marginBottom: 20 }}>
+                        <div style={{ padding: 14, background: 'var(--bg-primary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginBottom: 20 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--primary)' }}>{selectedTemplate.category}</span>
+                                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent)' }}>{selectedTemplate.category}</span>
                                 {getPriorityBadge(selectedTemplate.priority)}
                             </div>
-                            <h4 style={{ margin: '0 0 6px 0', fontSize: 14, fontWeight: 600 }}>{selectedTemplate.title}</h4>
-                            <p style={{ margin: 0, fontSize: 12, color: 'var(--text-muted)' }}>{selectedTemplate.bodyTemplate}</p>
+                            <h4 style={{ margin: '0 0 6px 0', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{selectedTemplate.title}</h4>
+                            <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{selectedTemplate.bodyTemplate}</p>
                         </div>
 
                         <form onSubmit={handleTrigger}>
                             {/* Target User */}
                             <div className="form-group" style={{ marginBottom: 16 }}>
-                                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Target User Type</label>
-                                <div style={{ display: 'flex', gap: 10 }}>
-                                    <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Target User Type</label>
+                                <div style={{ display: 'flex', gap: 12 }}>
+                                    <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--text-secondary)' }}>
                                         <input type="radio" checked={targetUserType === 'client'} onChange={() => { setTargetUserType('client'); setSelectedUserId(''); }} /> Client
                                     </label>
-                                    <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--text-secondary)' }}>
                                         <input type="radio" checked={targetUserType === 'provider'} onChange={() => { setTargetUserType('provider'); setSelectedUserId(''); }} /> Provider
                                     </label>
-                                    <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                    <label style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: 'var(--text-secondary)' }}>
                                         <input type="radio" checked={targetUserType === 'custom'} onChange={() => { setTargetUserType('custom'); setSelectedUserId(''); }} /> Custom UID
                                     </label>
                                 </div>
@@ -415,9 +421,10 @@ export default function NotificationsSimulator() {
                             {/* User Selection */}
                             {targetUserType === 'client' && (
                                 <div className="form-group" style={{ marginBottom: 16 }}>
-                                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Select Client Profile</label>
+                                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Select Client Profile</label>
                                     <select 
-                                        className="form-control" 
+                                        className="select" 
+                                        style={{ width: '100%' }}
                                         value={selectedUserId} 
                                         onChange={(e) => setSelectedUserId(e.target.value)}
                                         required
@@ -432,9 +439,10 @@ export default function NotificationsSimulator() {
 
                             {targetUserType === 'provider' && (
                                 <div className="form-group" style={{ marginBottom: 16 }}>
-                                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Select Provider Profile</label>
+                                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Select Provider Profile</label>
                                     <select 
-                                        className="form-control" 
+                                        className="select" 
+                                        style={{ width: '100%' }}
                                         value={selectedUserId} 
                                         onChange={(e) => setSelectedUserId(e.target.value)}
                                         required
@@ -449,10 +457,11 @@ export default function NotificationsSimulator() {
 
                             {targetUserType === 'custom' && (
                                 <div className="form-group" style={{ marginBottom: 16 }}>
-                                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Target User UUID</label>
+                                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Target User UUID</label>
                                     <input 
                                         type="text" 
-                                        className="form-control" 
+                                        className="input" 
+                                        style={{ width: '100%' }}
                                         placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000" 
                                         value={customUserId} 
                                         onChange={(e) => setCustomUserId(e.target.value)}
@@ -464,7 +473,7 @@ export default function NotificationsSimulator() {
                             {/* Context Parameters */}
                             {Object.keys(contextValues).length > 0 && (
                                 <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, marginTop: 16 }}>
-                                    <h4 style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 600 }}>Template Parameters</h4>
+                                    <h4 style={{ margin: '0 0 12px 0', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Template Parameters</h4>
                                     
                                     {Object.keys(contextValues).map(key => (
                                         <div key={key} className="form-group" style={{ marginBottom: 12 }}>
@@ -473,7 +482,8 @@ export default function NotificationsSimulator() {
                                             </label>
                                             <input 
                                                 type="text" 
-                                                className="form-control" 
+                                                className="input" 
+                                                style={{ width: '100%' }}
                                                 value={contextValues[key]} 
                                                 onChange={(e) => setContextValues(prev => ({ ...prev, [key]: e.target.value }))}
                                                 required
@@ -484,7 +494,7 @@ export default function NotificationsSimulator() {
                             )}
 
                             {feedback && (
-                                <div className={`alert ${feedback.type === 'success' ? 'alert-success' : 'alert-danger'}`} style={{ marginTop: 16 }}>
+                                <div className={`badge-status ${feedback.type === 'success' ? 'active' : 'cancelled'}`} style={{ marginTop: 16, width: '100%', padding: '10px 14px', borderRadius: 10, justifyContent: 'center' }}>
                                     {feedback.message}
                                 </div>
                             )}
@@ -494,7 +504,7 @@ export default function NotificationsSimulator() {
                                     type="button" 
                                     className="btn btn-secondary" 
                                     onClick={() => setSelectedTemplate(null)}
-                                    style={{ flex: 1 }}
+                                    style={{ flex: 1, justifyContent: 'center' }}
                                 >
                                     Cancel
                                 </button>

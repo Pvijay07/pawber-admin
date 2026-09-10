@@ -39,6 +39,17 @@
   --radius-lg: 22px;
   --radius-xl: 32px;
   --radius-2xl: 32px;
+
+  /* Aliases for compatibility */
+  --primary: #FF7A3D;
+  --primary-light: rgba(255, 122, 61, 0.08);
+  --primary-hover: #E0591A;
+  --surface: #ffffff;
+  --surface-overlay: #ffffff;
+  --background: #FFF9F5;
+  --border-light: #F5E6D8;
+  --success: #1D9E86;
+  --success-light: rgba(29, 158, 134, 0.08);
 }
 
 .dark {
@@ -57,6 +68,17 @@
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
   --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+
+  /* Dark Aliases */
+  --primary: #FF7A3D;
+  --primary-light: rgba(255, 122, 61, 0.12);
+  --primary-hover: #E0591A;
+  --surface: #2A1D15;
+  --surface-overlay: #2A1D15;
+  --background: #1A1612;
+  --border-light: #3D2A1E;
+  --success: #1D9E86;
+  --success-light: rgba(29, 158, 134, 0.12);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -522,6 +544,124 @@ tr:hover td { background: var(--bg-hover); }
   transition: all 0.2s;
 }
 .theme-toggle:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.sidebar .theme-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.75);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sidebar .theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ─── UTILITIES & COMPATIBILITY ─────────────────── */
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+.panel.hover-effect:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-hover);
+}
+
+.stats-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s;
+}
+.stats-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.stats-card .label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+}
+.stats-card .value {
+  font-family: 'Nunito', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.stats-card .desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.form-control {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.form-control-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.btn-light {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.btn-light:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge-primary { background: var(--accent-light); color: var(--accent); }
+.badge-danger { background: var(--danger-light); color: var(--danger); }
+.badge-warning { background: var(--warning-light); color: var(--warning); }
+.badge-success { background: var(--info-light); color: var(--info); }
+.badge-secondary { background: var(--bg-tertiary); color: var(--text-secondary); }
 
 /* animations */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
