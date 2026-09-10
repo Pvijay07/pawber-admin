@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import {
     LayoutDashboard, CalendarCheck, Users, Briefcase, Wallet,
     AlertTriangle, PartyPopper, Webhook, Sun, Moon, Menu, PawPrint,
-    ChevronLeft, LogOut, Layers, Settings, Image, Bell, MessageCircle, Database
+    ChevronLeft, LogOut, Layers, Settings, Image, Bell, MessageCircle, Database, Palette
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -35,6 +35,7 @@ const navItems: { section: string; items: { id: Page; icon: any; label: string; 
     {
         section: 'Operations',
         items: [
+            { id: 'themes', icon: Palette, label: 'Seasonal Themes' },
             { id: 'whatsapp', icon: MessageCircle, label: 'WhatsApp Inbox' },
             { id: 'banners', icon: Image, label: 'App Banners' },
             { id: 'events', icon: PartyPopper, label: 'Events' },

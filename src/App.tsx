@@ -15,10 +15,11 @@ import Login from './pages/Login';
 import NotificationsSimulator from './pages/NotificationsSimulator';
 import WhatsAppInbox from './pages/WhatsAppInbox';
 import Database from './pages/Database';
+import SeasonalThemes from './pages/SeasonalThemes';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
-export type Page = 'dashboard' | 'bookings' | 'users' | 'providers' | 'payments' | 'disputes' | 'events' | 'webhooks' | 'services' | 'pet-settings' | 'banners' | 'notifications' | 'whatsapp' | 'database';
+export type Page = 'dashboard' | 'bookings' | 'users' | 'providers' | 'payments' | 'disputes' | 'events' | 'webhooks' | 'services' | 'pet-settings' | 'banners' | 'notifications' | 'whatsapp' | 'database' | 'themes';
 
 interface ThemeContextType {
   isDark: boolean;
@@ -67,6 +68,7 @@ function AppContent() {
       case 'notifications': return <NotificationsSimulator />;
       case 'whatsapp': return <WhatsAppInbox />;
       case 'database': return <Database />;
+      case 'themes': return <SeasonalThemes />;
       default: return <Dashboard />;
     }
   };

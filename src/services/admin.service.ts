@@ -171,4 +171,14 @@ export const adminService = {
 
     triggerSimulationNotification: (data: { userId?: string; templateId: string; context?: Record<string, any> }) =>
         api.post<{ success: boolean; message: string }>('/admin/notifications/trigger-simulation', data),
+
+    // Festival & Seasonal Theming
+    listThemes: () =>
+        api.get<{ success: boolean; data: any[] }>('/theme/admin/all'),
+
+    activateTheme: (key: string) =>
+        api.post<{ success: boolean; data: any; message: string }>(`/theme/admin/${key}/activate`),
+
+    updateTheme: (key: string, data: any) =>
+        api.put<{ success: boolean; data: any; message: string }>(`/theme/admin/${key}`, data),
 };
