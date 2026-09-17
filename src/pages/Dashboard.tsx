@@ -144,10 +144,20 @@ export default function Dashboard() {
     ];
 
     const chartColors = {
-        stroke: isDark ? '#FF7A3D' : '#FF7A3D',
-        fill: isDark ? 'rgba(255,122,61,0.1)' : 'rgba(255,122,61,0.08)',
-        grid: isDark ? '#3D2A1E' : '#F5E6D8',
-        text: isDark ? '#7A5540' : '#B09080',
+        stroke: '#FF7A3D',
+        fill: isDark ? 'rgba(255,122,61,0.15)' : 'rgba(244,99,34,0.12)',
+        grid: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
+        text: isDark ? '#A39082' : '#6E5647',
+    };
+
+    const tooltipStyle = {
+        background: isDark ? '#1C1612' : '#ffffff',
+        border: `1px solid ${isDark ? '#33271F' : '#E8DCD1'}`,
+        color: isDark ? '#FAF5F0' : '#18120C',
+        boxShadow: isDark ? '0 12px 28px rgba(0,0,0,0.45)' : '0 8px 24px rgba(24,18,12,0.12)',
+        borderRadius: 12,
+        fontSize: 12,
+        fontWeight: 600,
     };
 
     return (
@@ -209,13 +219,7 @@ export default function Dashboard() {
                             <XAxis dataKey="month" tick={{ fill: chartColors.text, fontSize: 11 }} axisLine={false} tickLine={false} />
                             <YAxis tick={{ fill: chartColors.text, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
                             <Tooltip
-                                contentStyle={{
-                                    background: isDark ? '#1a1f35' : '#fff',
-                                    border: `1px solid ${isDark ? '#3D2A1E' : '#DEC9B5'}`,
-                                    borderRadius: 10,
-                                    fontSize: 12,
-                                    fontWeight: 600,
-                                }}
+                                contentStyle={tooltipStyle}
                                 formatter={(value: any) => [`₹${Number(value).toLocaleString()}`, 'Revenue']}
                             />
                             <Area type="monotone" dataKey="revenue" stroke="#FF7A3D" strokeWidth={2.5} fill="url(#revGrad)" />
@@ -236,12 +240,7 @@ export default function Dashboard() {
                                 ))}
                             </Pie>
                             <Tooltip
-                                contentStyle={{
-                                    background: isDark ? '#1a1f35' : '#fff',
-                                    border: `1px solid ${isDark ? '#3D2A1E' : '#DEC9B5'}`,
-                                    borderRadius: 10,
-                                    fontSize: 12,
-                                }}
+                                contentStyle={tooltipStyle}
                                 formatter={(value: any) => [`${value}%`, 'Share']}
                             />
                         </PieChart>
@@ -268,7 +267,7 @@ export default function Dashboard() {
                             <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                             <XAxis dataKey="day" tick={{ fill: chartColors.text, fontSize: 11 }} axisLine={false} tickLine={false} />
                             <YAxis tick={{ fill: chartColors.text, fontSize: 11 }} axisLine={false} tickLine={false} />
-                            <Tooltip contentStyle={{ background: isDark ? '#1a1f35' : '#fff', border: `1px solid ${isDark ? '#3D2A1E' : '#DEC9B5'}`, borderRadius: 10, fontSize: 12 }} />
+                            <Tooltip contentStyle={tooltipStyle} />
                             <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]} barSize={32} />
                         </BarChart>
                     </ResponsiveContainer>

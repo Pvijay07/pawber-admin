@@ -58,12 +58,13 @@ export default function Sidebar({ currentPage, onNavigate, isOpen, onToggle }: S
                 </div>
                 <div className="sidebar-logo-text">
                     Paw<span>ber</span>
+                    <span className="sidebar-logo-badge">ADMIN</span>
                 </div>
             </div>
 
             <nav className="sidebar-nav">
                 {navItems.map((section) => (
-                    <div key={section.section}>
+                    <div key={section.section} className="sidebar-section">
                         <div className="sidebar-section-title">{section.section}</div>
                         {section.items.map((item) => (
                             <button
@@ -71,6 +72,7 @@ export default function Sidebar({ currentPage, onNavigate, isOpen, onToggle }: S
                                 className={`sidebar-item ${currentPage === item.id ? 'active' : ''}`}
                                 onClick={() => onNavigate(item.id)}
                                 title={item.label}
+                                aria-label={item.label}
                             >
                                 <item.icon size={18} className="sidebar-item-icon" />
                                 <span className="sidebar-label">{item.label}</span>
@@ -82,23 +84,38 @@ export default function Sidebar({ currentPage, onNavigate, isOpen, onToggle }: S
             </nav>
 
             <div className="sidebar-footer">
-                <div style={{ display: 'flex', gap: 6, marginBottom: 12, paddingLeft: 4 }}>
-                    <button className="theme-toggle" onClick={toggle} title="Toggle theme">
+                <div className="sidebar-actions">
+                    <button
+                        className="sidebar-action-btn"
+                        onClick={toggle}
+                        title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+                        aria-label="Toggle Theme"
+                    >
                         {isDark ? <Sun size={16} /> : <Moon size={16} />}
                     </button>
-                    <button className="theme-toggle" onClick={onToggle} title="Toggle sidebar">
+                    <button
+                        className="sidebar-action-btn"
+                        onClick={onToggle}
+                        title={isOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
+                        aria-label="Toggle Sidebar"
+                    >
                         {isOpen ? <ChevronLeft size={16} /> : <Menu size={16} />}
                     </button>
-                    <button className="theme-toggle" onClick={signOut} title="Logout" style={{ color: 'var(--danger)' }}>
+                    <button
+                        className="sidebar-action-btn logout"
+                        onClick={signOut}
+                        title="Sign Out"
+                        aria-label="Sign Out"
+                    >
                         <LogOut size={16} />
                     </button>
                 </div>
                 <div className="sidebar-user">
-                    <div className="sidebar-user-avatar" style={{ background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>
+                    <div className="sidebar-user-avatar">
                         {user?.email?.[0].toUpperCase() || 'A'}
                     </div>
                     <div className="sidebar-user-info">
-                        <div className="name" style={{ fontSize: 11 }}>{user?.email?.split('@')[0]}</div>
+                        <div className="name">{user?.email?.split('@')[0] || 'Admin'}</div>
                         <div className="role">Administrator</div>
                     </div>
                 </div>

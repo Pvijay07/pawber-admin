@@ -1,5 +1,6 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState } from 'react';
 import Sidebar from './components/Sidebar';
+import Topbar from './components/Topbar';
 import Dashboard from './pages/Dashboard';
 import Bookings from './pages/Bookings';
 import Users from './pages/Users';
@@ -17,27 +18,33 @@ import WhatsAppInbox from './pages/WhatsAppInbox';
 import Database from './pages/Database';
 import SeasonalThemes from './pages/SeasonalThemes';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import './App.css';
 
-export type Page = 'dashboard' | 'bookings' | 'users' | 'providers' | 'payments' | 'disputes' | 'events' | 'webhooks' | 'services' | 'pet-settings' | 'banners' | 'notifications' | 'whatsapp' | 'database' | 'themes';
+export { useTheme } from './context/ThemeContext';
 
-interface ThemeContextType {
-  isDark: boolean;
-  toggle: () => void;
-}
-
-export const ThemeContext = createContext<ThemeContextType>({ isDark: true, toggle: () => { } });
-export const useTheme = () => useContext(ThemeContext);
+export type Page =
+  | 'dashboard'
+  | 'bookings'
+  | 'users'
+  | 'providers'
+  | 'payments'
+  | 'disputes'
+  | 'events'
+  | 'webhooks'
+  | 'services'
+  | 'pet-settings'
+  | 'banners'
+  | 'notifications'
+  | 'whatsapp'
+  | 'database'
+  | 'themes';
 
 function AppContent() {
   const { user, loading, isAdmin } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const { isDark } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark);
-  }, [isDark]);
 
   if (loading) {
     return (
@@ -81,21 +88,26 @@ function AppContent() {
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
-      <main className={`main-content ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-        {renderPage()}
-      </main>
+      <div className={`main-wrapper ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+        <Topbar
+          currentPage={currentPage}
+          sidebarOpen={sidebarOpen}
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        />
+        <main className="main-content-body">
+          {renderPage()}
+        </main>
+      </div>
     </div>
   );
 }
 
 function App() {
-  const [isDark, setIsDark] = useState(true);
-
   return (
     <AuthProvider>
-      <ThemeContext.Provider value={{ isDark, toggle: () => setIsDark(!isDark) }}>
+      <ThemeProvider>
         <AppContent />
-      </ThemeContext.Provider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }
