@@ -19,9 +19,12 @@ export interface DashboardResponse {
 // ─── Admin Service ──────────────────────────────
 
 export const adminService = {
-    // Dashboard
+    // Dashboard & App Analytics
     getDashboard: () =>
         api.get<DashboardResponse>('/admin/dashboard'),
+
+    getAppAnalytics: (timeframe: '7d' | '30d' | '90d' | 'all' = '30d') =>
+        api.get<any>('/admin/app-analytics', { params: { timeframe } }),
 
     // Users
     listUsers: (params?: { role?: string; limit?: number; offset?: number }) =>

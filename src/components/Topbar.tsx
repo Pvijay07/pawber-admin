@@ -22,7 +22,8 @@ import {
   Bell,
   MessageCircle,
   Database,
-  Palette
+  Palette,
+  BarChart3
 } from 'lucide-react';
 
 interface TopbarProps {
@@ -33,6 +34,7 @@ interface TopbarProps {
 
 const pageMeta: Record<Page, { title: string; category: string; icon: any }> = {
   dashboard: { title: 'Dashboard', category: 'Overview', icon: LayoutDashboard },
+  analytics: { title: 'Analytics & Insights', category: 'Overview', icon: BarChart3 },
   bookings: { title: 'Bookings', category: 'Management', icon: CalendarCheck },
   users: { title: 'Users & Pets', category: 'Management', icon: Users },
   providers: { title: 'Providers', category: 'Management', icon: Briefcase },

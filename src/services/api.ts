@@ -33,6 +33,14 @@ api.interceptors.request.use(
       if (session?.access_token) {
         config.headers.Authorization = `Bearer ${session.access_token}`;
       }
+
+      // Inject unique request ID for end-to-end distributed tracing
+      if (!config.headers["X-Request-Id"]) {
+        const reqId = typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `adm_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        config.headers["X-Request-Id"] = reqId;
+      }
     } catch (err) {
       console.error("Failed to attach auth token:", err);
     }

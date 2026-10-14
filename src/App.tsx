@@ -1,30 +1,35 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
-import Dashboard from './pages/Dashboard';
-import Bookings from './pages/Bookings';
-import Users from './pages/Users';
-import Providers from './pages/Providers';
-import Payments from './pages/Payments';
-import Disputes from './pages/Disputes';
-import Events from './pages/Events';
-import WebhookLogs from './pages/WebhookLogs';
-import Services from './pages/Services';
-import PetSettings from './pages/PetSettings';
-import Banners from './pages/Banners';
-import Login from './pages/Login';
-import NotificationsSimulator from './pages/NotificationsSimulator';
-import WhatsAppInbox from './pages/WhatsAppInbox';
-import Database from './pages/Database';
-import SeasonalThemes from './pages/SeasonalThemes';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import './App.css';
+
+// ─── Route-Level Code Splitting (Lazy-loaded chunks) ──────────
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Bookings = lazy(() => import('./pages/Bookings'));
+const Users = lazy(() => import('./pages/Users'));
+const Providers = lazy(() => import('./pages/Providers'));
+const Payments = lazy(() => import('./pages/Payments'));
+const Disputes = lazy(() => import('./pages/Disputes'));
+const Events = lazy(() => import('./pages/Events'));
+const WebhookLogs = lazy(() => import('./pages/WebhookLogs'));
+const Services = lazy(() => import('./pages/Services'));
+const PetSettings = lazy(() => import('./pages/PetSettings'));
+const Banners = lazy(() => import('./pages/Banners'));
+const Login = lazy(() => import('./pages/Login'));
+const NotificationsSimulator = lazy(() => import('./pages/NotificationsSimulator'));
+const WhatsAppInbox = lazy(() => import('./pages/WhatsAppInbox'));
+const Database = lazy(() => import('./pages/Database'));
+const SeasonalThemes = lazy(() => import('./pages/SeasonalThemes'));
+const AppAnalytics = lazy(() => import('./pages/AppAnalytics'));
 
 export { useTheme } from './context/ThemeContext';
 
 export type Page =
   | 'dashboard'
+  | 'analytics'
   | 'bookings'
   | 'users'
   | 'providers'
@@ -39,6 +44,17 @@ export type Page =
   | 'whatsapp'
   | 'database'
   | 'themes';
+
+function PageLoader() {
+  return (
+    <div className="loading-screen" style={{ minHeight: '400px' }}>
+      <div className="loader"></div>
+      <p style={{ marginTop: '12px', fontSize: '13px', fontWeight: 600, color: '#64748B' }}>
+        Loading view...
+      </p>
+    </div>
+  );
+}
 
 function AppContent() {
   const { user, loading, isAdmin } = useAuth();
@@ -56,12 +72,17 @@ function AppContent() {
   }
 
   if (!user || !isAdmin) {
-    return <Login />;
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <Login />
+      </Suspense>
+    );
   }
 
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard': return <Dashboard />;
+      case 'analytics': return <AppAnalytics onNavigate={(page: string) => setCurrentPage(page as Page)} />;
       case 'bookings': return <Bookings />;
       case 'users': return <Users />;
       case 'providers': return <Providers />;
@@ -95,7 +116,11 @@ function AppContent() {
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         />
         <main className="main-content-body">
-          {renderPage()}
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              {renderPage()}
+            </Suspense>
+          </ErrorBoundary>
         </main>
       </div>
     </div>
@@ -104,11 +129,13 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <AppContent />
-      </ThemeProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
