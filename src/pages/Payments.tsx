@@ -1,114 +1,292 @@
-import { useState } from 'react';
-import { Wallet, ArrowUpRight, RefreshCw, AlertCircle, Download, CreditCard, ShieldCheck, Clock } from 'lucide-react';
-
-const transactions = [
-    { id: 'TXN-8842', user: 'Sarah Jenkins', avatar: 'https://i.pravatar.cc/100?img=1', type: 'payment', amount: 1999, status: 'completed', method: 'Razorpay', booking: 'BK-0412', date: '2024-02-15 14:32', description: 'Spa & Grooming' },
-    { id: 'TXN-8841', user: 'Amit Kumar', avatar: 'https://i.pravatar.cc/100?img=3', type: 'payment', amount: 499, status: 'completed', method: 'Razorpay', booking: 'BK-0411', date: '2024-02-15 13:10', description: 'Vet Checkup' },
-    { id: 'TXN-8840', user: 'David Miller', avatar: 'https://i.pravatar.cc/100?img=12', type: 'payout', amount: 4200, status: 'pending', method: 'Bank Transfer', booking: '—', date: '2024-02-15 10:00', description: 'Weekly Payout' },
-    { id: 'TXN-8839', user: 'Neha Gupta', avatar: 'https://i.pravatar.cc/100?img=9', type: 'refund', amount: 1499, status: 'completed', method: 'Razorpay', booking: 'BK-0408', date: '2024-02-14 16:45', description: 'Cancelled booking refund' },
-    { id: 'TXN-8838', user: 'Raj Patel', avatar: 'https://i.pravatar.cc/100?img=8', type: 'payment', amount: 2499, status: 'failed', method: 'Razorpay', booking: 'BK-0409', date: '2024-02-14 11:22', description: 'Pet Training' },
-    { id: 'TXN-8837', user: 'Anita Desai', avatar: 'https://i.pravatar.cc/100?img=25', type: 'payout', amount: 3800, status: 'completed', method: 'Bank Transfer', booking: '—', date: '2024-02-13 09:00', description: 'Weekly Payout' },
-    { id: 'TXN-8836', user: 'Priya Sharma', avatar: 'https://i.pravatar.cc/100?img=5', type: 'wallet_credit', amount: 500, status: 'completed', method: 'Admin', booking: '—', date: '2024-02-13 08:15', description: 'Goodwill credit' },
-];
+import { useState, useEffect } from 'react';
+import {
+    Wallet, ArrowUpRight, RefreshCw, AlertCircle, CreditCard,
+    ShieldCheck, Clock, CheckCircle2
+} from 'lucide-react';
+import { adminService } from '../services/admin.service';
 
 export default function Payments() {
     const [filter, setFilter] = useState('all');
     const [showAdjust, setShowAdjust] = useState(false);
+    const [search, setSearch] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [transactions, setTransactions] = useState<any[]>([]);
+    const [stats, setStats] = useState({
+        total_revenue: 0,
+        in_escrow: 0,
+        failed_count: 0,
+        total_transactions: 0
+    });
 
-    const filtered = transactions.filter(t => filter === 'all' || t.type === filter);
+    // Manual adjustment state
+    const [adjustIdentifier, setAdjustIdentifier] = useState('');
+    const [adjustAmount, setAdjustAmount] = useState('');
+    const [adjustType, setAdjustType] = useState<'credit' | 'debit'>('credit');
+    const [adjustReason, setAdjustReason] = useState('');
+    const [isSubmittingAdjust, setIsSubmittingAdjust] = useState(false);
+    const [adjustSuccessMsg, setAdjustSuccessMsg] = useState<string | null>(null);
+
+    const fetchPayments = async () => {
+        setLoading(true);
+        try {
+            const res = await adminService.getPayments();
+            if (res.data?.success) {
+                setTransactions(res.data.transactions || []);
+                if (res.data.stats) {
+                    setStats(res.data.stats);
+                }
+            }
+        } catch (err) {
+            console.error('Failed to load payments data:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPayments();
+    }, []);
+
+    const handleApplyAdjustment = async () => {
+        if (!adjustIdentifier || !adjustAmount) {
+            alert('Please enter user identifier (phone, email, or UUID) and amount');
+            return;
+        }
+
+        const amt = parseFloat(adjustAmount);
+        if (isNaN(amt) || amt <= 0) {
+            alert('Please enter a valid positive amount');
+            return;
+        }
+
+        setIsSubmittingAdjust(true);
+        setAdjustSuccessMsg(null);
+        try {
+            const res = await adminService.adjustWallet({
+                user_identifier: adjustIdentifier,
+                amount: amt,
+                type: adjustType,
+                reason: adjustReason || 'Admin wallet adjustment'
+            });
+
+            if (res.data?.success) {
+                setAdjustSuccessMsg(res.data.message);
+                setAdjustIdentifier('');
+                setAdjustAmount('');
+                setAdjustReason('');
+                fetchPayments(); // Refresh transactions and numbers
+            }
+        } catch (err: any) {
+            alert(err.response?.data?.error || err.message || 'Failed to adjust wallet');
+        } finally {
+            setIsSubmittingAdjust(false);
+        }
+    };
+
+    const filtered = transactions.filter(t => {
+        if (filter !== 'all' && t.status !== filter && t.type !== filter) return false;
+        if (search) {
+            const term = search.toLowerCase();
+            const userName = (t.user || '').toLowerCase();
+            const txnId = (t.id || '').toLowerCase();
+            const orderId = (t.order_id || '').toLowerCase();
+            const bookingId = (t.booking_id || '').toLowerCase();
+            return userName.includes(term) || txnId.includes(term) || orderId.includes(term) || bookingId.includes(term);
+        }
+        return true;
+    });
 
     return (
         <div className="animate-in">
             <div className="page-header">
                 <div>
-                    <h1>Payments & Wallet</h1>
-                    <p className="subtitle">Monitor transactions, process refunds, and manage payouts.</p>
+                    <h1>Payments & Financials</h1>
+                    <p className="subtitle">Real-time gateway transactions, escrow holding, and customer wallets.</p>
                 </div>
                 <div className="page-header-actions">
-                    <button className="btn btn-secondary btn-sm" onClick={() => setShowAdjust(!showAdjust)}><RefreshCw size={14} /> Manual Adjustment</button>
-                    <button className="btn btn-secondary btn-sm"><Download size={14} /> Export</button>
+                    <button className="btn btn-secondary btn-sm" onClick={() => setShowAdjust(!showAdjust)}>
+                        <RefreshCw size={14} /> Manual Adjustment
+                    </button>
+                    <button className="btn btn-secondary btn-sm" onClick={fetchPayments}>
+                        <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
+                    </button>
                 </div>
             </div>
 
             <div className="stats-grid" style={{ marginBottom: 20 }}>
                 <div className="stat-card accent">
                     <div className="stat-icon accent"><Wallet size={20} /></div>
-                    <div className="stat-label">Total Revenue</div>
-                    <div className="stat-value">₹4,72,000</div>
-                    <div className="stat-change up"><ArrowUpRight size={12} /> +18.2%</div>
+                    <div className="stat-label">Total Settled Revenue</div>
+                    <div className="stat-value">₹{stats.total_revenue.toLocaleString()}</div>
+                    <div className="stat-change up"><ArrowUpRight size={12} /> Live from Razorpay & bookings</div>
                 </div>
                 <div className="stat-card info">
                     <div className="stat-icon info"><ShieldCheck size={20} /></div>
-                    <div className="stat-label">In Escrow</div>
-                    <div className="stat-value">₹1,24,500</div>
+                    <div className="stat-label">Held In Escrow</div>
+                    <div className="stat-value">₹{stats.in_escrow.toLocaleString()}</div>
+                    <div className="stat-change info">Secured for active service jobs</div>
                 </div>
                 <div className="stat-card warning">
                     <div className="stat-icon warning"><Clock size={20} /></div>
-                    <div className="stat-label">Pending Payouts</div>
-                    <div className="stat-value">₹42,800</div>
+                    <div className="stat-label">Total Transactions</div>
+                    <div className="stat-value">{stats.total_transactions}</div>
+                    <div className="stat-change">All platform payment intents</div>
                 </div>
                 <div className="stat-card danger">
                     <div className="stat-icon danger"><AlertCircle size={20} /></div>
-                    <div className="stat-label">Failed Payments</div>
-                    <div className="stat-value">3</div>
+                    <div className="stat-label">Failed Gateway Payments</div>
+                    <div className="stat-value">{stats.failed_count}</div>
+                    <div className="stat-change danger">Check logs for drops</div>
                 </div>
             </div>
 
             {showAdjust && (
-                <div className="card" style={{ marginBottom: 20 }}>
-                    <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Manual Wallet Adjustment</h4>
+                <div className="card" style={{ marginBottom: 20, border: '1px solid var(--primary-light)' }}>
+                    <h4 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Wallet size={16} color="var(--primary)" /> Manual Customer Wallet Adjustment
+                    </h4>
+                    {adjustSuccessMsg && (
+                        <div style={{ padding: '8px 12px', background: 'rgba(16, 185, 129, 0.1)', color: '#059669', borderRadius: 8, fontSize: 13, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <CheckCircle2 size={16} /> {adjustSuccessMsg}
+                        </div>
+                    )}
                     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                        <input type="text" className="input" placeholder="User email or ID" style={{ flex: 1, minWidth: 200 }} />
-                        <input type="number" className="input" placeholder="Amount" style={{ width: 120 }} />
-                        <select className="select" style={{ width: 140 }}>
-                            <option>Credit (+)</option>
-                            <option>Debit (-)</option>
+                        <input
+                            type="text"
+                            className="input"
+                            placeholder="User Phone, Email or ID"
+                            style={{ flex: 1, minWidth: 200 }}
+                            value={adjustIdentifier}
+                            onChange={e => setAdjustIdentifier(e.target.value)}
+                        />
+                        <input
+                            type="number"
+                            className="input"
+                            placeholder="Amount (₹)"
+                            style={{ width: 140 }}
+                            value={adjustAmount}
+                            onChange={e => setAdjustAmount(e.target.value)}
+                        />
+                        <select
+                            className="select"
+                            style={{ width: 140 }}
+                            value={adjustType}
+                            onChange={e => setAdjustType(e.target.value as 'credit' | 'debit')}
+                        >
+                            <option value="credit">Credit (+)</option>
+                            <option value="debit">Debit (-)</option>
                         </select>
-                        <input type="text" className="input" placeholder="Reason" style={{ flex: 1, minWidth: 200 }} />
-                        <button className="btn btn-primary btn-sm">Apply</button>
+                        <input
+                            type="text"
+                            className="input"
+                            placeholder="Reason (e.g. Booking refund, Goodwill)"
+                            style={{ flex: 1.5, minWidth: 200 }}
+                            value={adjustReason}
+                            onChange={e => setAdjustReason(e.target.value)}
+                        />
+                        <button
+                            className="btn btn-primary btn-sm"
+                            disabled={isSubmittingAdjust}
+                            onClick={handleApplyAdjustment}
+                        >
+                            {isSubmittingAdjust ? 'Applying...' : 'Apply Adjustment'}
+                        </button>
                     </div>
                 </div>
             )}
 
-            <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-                {['all', 'payment', 'payout', 'refund', 'wallet_credit'].map(f => (
-                    <button key={f} onClick={() => setFilter(f)} className={`btn ${filter === f ? 'btn-primary' : 'btn-secondary'} btn-sm`}>
-                        {f === 'all' ? 'All' : f === 'wallet_credit' ? 'Wallet' : f.charAt(0).toUpperCase() + f.slice(1) + 's'}
-                    </button>
-                ))}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    {['all', 'completed', 'pending', 'failed'].map(f => (
+                        <button
+                            key={f}
+                            onClick={() => setFilter(f)}
+                            className={`btn ${filter === f ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                        >
+                            {f === 'all' ? 'All Transactions' : f.charAt(0).toUpperCase() + f.slice(1)}
+                        </button>
+                    ))}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div className="search-box" style={{ position: 'relative' }}>
+                        <input
+                            type="text"
+                            className="input"
+                            placeholder="Search user, order, or ID..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            style={{ width: 240, fontSize: 13 }}
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="table-container">
                 <div className="table-header">
-                    <div className="table-title">Transactions ({filtered.length})</div>
+                    <div className="table-title">Live Transactions ({filtered.length})</div>
                 </div>
                 <table>
-                    <thead><tr><th>TXN ID</th><th>User</th><th>Type</th><th>Amount</th><th>Method</th><th>Booking</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Order / Payment ID</th>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Gateway / Method</th>
+                            <th>Booking</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        {filtered.map(t => (
+                        {loading ? (
+                            <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>Loading real transaction records...</td></tr>
+                        ) : filtered.length === 0 ? (
+                            <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>No payment transactions found.</td></tr>
+                        ) : filtered.map(t => (
                             <tr key={t.id}>
-                                <td><span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: 12, color: 'var(--text-primary)' }}>{t.id}</span></td>
+                                <td>
+                                    <div style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: 12, color: 'var(--text-primary)' }}>
+                                        {t.order_id || t.id.substring(0, 8)}
+                                    </div>
+                                    <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>ID: {t.id.substring(0, 8)}</div>
+                                </td>
                                 <td>
                                     <div className="table-user">
-                                        <img src={t.avatar} alt={t.user} className="table-avatar" />
-                                        <span className="table-name">{t.user}</span>
+                                        <div className="table-avatar" style={{ background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 11 }}>
+                                            {t.user?.[0] || 'U'}
+                                        </div>
+                                        <div>
+                                            <span className="table-name">{t.user}</span>
+                                            {t.phone && <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t.phone}</div>}
+                                        </div>
                                     </div>
                                 </td>
+                                <td style={{ fontWeight: 700, color: t.status === 'failed' ? 'var(--danger)' : 'var(--accent)' }}>
+                                    ₹{(t.amount || 0).toLocaleString()}
+                                </td>
+                                <td style={{ fontSize: 12 }}>
+                                    <CreditCard size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                                    {t.method}
+                                </td>
                                 <td>
-                                    <span className={`badge-status ${t.type === 'payment' ? 'active' : t.type === 'payout' ? 'confirmed' : t.type === 'refund' ? 'pending' : 'in_progress'}`}>
-                                        {t.type === 'wallet_credit' ? 'Wallet' : t.type}
+                                    {t.booking_id ? (
+                                        <div>
+                                            <span style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 600 }}>#{t.booking_code}</span>
+                                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.description}</div>
+                                        </div>
+                                    ) : (
+                                        <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>—</span>
+                                    )}
+                                </td>
+                                <td style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
+                                    <div>{new Date(t.date).toLocaleDateString()}</div>
+                                    <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{new Date(t.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                </td>
+                                <td>
+                                    <span className={`badge-status ${t.status === 'completed' ? 'completed' : t.status === 'pending' ? 'pending' : 'cancelled'}`}>
+                                        {t.status}
                                     </span>
-                                </td>
-                                <td style={{ fontWeight: 700, color: t.type === 'refund' || t.type === 'payout' ? 'var(--danger)' : 'var(--accent)' }}>
-                                    {t.type === 'refund' || t.type === 'payout' ? '-' : '+'}₹{t.amount.toLocaleString()}
-                                </td>
-                                <td style={{ fontSize: 12 }}><CreditCard size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />{t.method}</td>
-                                <td style={{ fontFamily: 'monospace', fontSize: 12 }}>{t.booking}</td>
-                                <td style={{ fontSize: 12, whiteSpace: 'nowrap' }}>{t.date}</td>
-                                <td><span className={`badge-status ${t.status === 'completed' ? 'completed' : t.status === 'pending' ? 'pending' : 'cancelled'}`}>{t.status}</span></td>
-                                <td>
-                                    {t.status === 'pending' && <button className="btn btn-primary btn-sm" style={{ fontSize: 10 }}>Approve</button>}
-                                    {t.status === 'failed' && <button className="btn btn-danger btn-sm" style={{ fontSize: 10 }}>Retry</button>}
                                 </td>
                             </tr>
                         ))}

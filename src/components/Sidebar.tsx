@@ -3,7 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import {
     LayoutDashboard, CalendarCheck, Users, Briefcase, Wallet,
     AlertTriangle, PartyPopper, Webhook, Sun, Moon, Menu, PawPrint,
-    ChevronLeft, LogOut, Layers, Settings, Image, Bell, MessageCircle, Database, Palette
+    ChevronLeft, LogOut, Layers, Settings, Image, Bell, MessageCircle, Database, Palette,
+    BarChart3
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -18,6 +19,7 @@ const navItems: { section: string; items: { id: Page; icon: any; label: string; 
         section: 'Main',
         items: [
             { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+            { id: 'analytics', icon: BarChart3, label: 'Analytics' },
             { id: 'bookings', icon: CalendarCheck, label: 'Bookings' },
         ],
     },

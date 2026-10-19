@@ -184,4 +184,19 @@ export const adminService = {
 
     updateTheme: (key: string, data: any) =>
         api.put<{ success: boolean; data: any; message: string }>(`/theme/admin/${key}`, data),
+
+    // Payments & Financials
+    getPayments: (params?: { status?: string; limit?: number; offset?: number }) =>
+        api.get<{ success: boolean; transactions: any[]; stats: any }>('/admin/payments', { params }),
+
+    adjustWallet: (data: { user_identifier: string; amount: number; type: 'credit' | 'debit'; reason?: string }) =>
+        api.post<{ success: boolean; message: string; new_balance: number; user: any }>('/admin/payments/adjust-wallet', data),
+
+    // Detailed Booking Tracking & Payment Status
+    getBookingDetails: (bookingId: string) =>
+        api.get<{ success: boolean; booking: any; payments: any[]; tracking: any }>(`/admin/bookings/${bookingId}/details`),
+
+    updateBookingStatus: (bookingId: string, data: { status?: string; payment_status?: string }) =>
+        api.patch<{ success: boolean; booking: any }>(`/admin/bookings/${bookingId}/status`, data),
 };
+
